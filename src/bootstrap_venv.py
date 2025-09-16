@@ -40,7 +40,9 @@ def run_command(command, timeout=300):
 
             if process.returncode != 0:
                 logger.error(f"Command error: {stderr}")
-                raise subprocess.CalledProcessError(process.returncode, command, stdout, stderr)
+                raise subprocess.CalledProcessError(
+                    process.returncode, command, stdout, stderr
+                )
 
             if stderr:
                 logger.error(f"Command error: {stderr}")

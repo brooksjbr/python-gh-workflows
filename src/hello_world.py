@@ -1,6 +1,7 @@
-def print_msg(msg: str):
-    return print(f"Your message is ${msg}")
+def msg(msg: str):
+    return f"Your message is {msg}"
 
 
 if __name__ == "__main__":
-    print_msg("Hello World!")
+    resp = msg("Hello World!")
+    print(resp)
