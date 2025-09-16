@@ -2,9 +2,9 @@
 
 ## Description
 
-This repo provides examples of how to create basic workflows to automate common activities in a GitHub project. For example
-code linting is a standard practice to enforce consistent code formatting and syntax. A linting task can be automated to run during
-a particular stage of the develop process to insure code is properly linted prior to merging with existing functionality.
+This repo provides examples of how to create basic workflows to automate common activities in a GitHub project. 
+For example code linting is a standard practice to enforce consistent code syntax. A linting task can be automated to run during a 
+particular stage of the develop process to insure code is properly linted prior to merging with existing functionality.
 
 ## GitHub workflow Hierarchy
 
