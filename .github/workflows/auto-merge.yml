@@ -1,0 +1,117 @@
+name: Auto Merge
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  pull_request_review:
+    types: [submitted]
+  check_suite:
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'pull_request' ||
+      github.event_name == 'pull_request_review' ||
+      github.event_name == 'check_suite'
+    steps:
+      - name: Get GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.PLEASE_RELEASE_APP_ID }}
+          private-key: ${{ secrets.PLEASE_RELEASE_PRIVATE_KEY }}
+
+      - name: Check if PR is ready for auto-merge
+        id: check-pr
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            // Get PR number from context
+            let prNumber;
+            if (context.eventName === 'pull_request') {
+              prNumber = context.payload.pull_request.number;
+            } else if (context.eventName === 'pull_request_review') {
+              prNumber = context.payload.pull_request.number;
+            } else if (context.eventName === 'check_suite') {
+              const prs = context.payload.check_suite.pull_requests;
+              if (prs.length === 0) return;
+              prNumber = prs[0].number;
+            } else {
+              return;
+            }
+
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+
+            // Skip draft PRs
+            if (pr.draft) {
+              console.log('PR is draft, skipping auto-merge');
+              return;
+            }
+
+            // Check if PR is from release-please
+            const isReleasePR = pr.user.login === 'github-actions[bot]' &&
+                              pr.user.type === 'Bot' &&
+                              (pr.title.includes('chore(main): release') ||
+                               pr.head.ref.startsWith('release-please'));
+
+            // Check if PR has auto-merge label or is release-please PR
+            const hasAutoMergeLabel = pr.labels.some(label =>
+              label.name === 'automerge' || label.name === 'auto-merge'
+            );
+
+            if (!hasAutoMergeLabel && !isReleasePR) {
+              console.log('PR does not have auto-merge label and is not a release PR');
+              return;
+            }
+
+            // Enable auto-merge if not already enabled
+            if (!pr.auto_merge) {
+              try {
+                await github.rest.pulls.enableAutoMerge({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber,
+                  merge_method: 'squash' // Change to 'merge' or 'rebase' if preferred
+                });
+                console.log(`Enabled auto-merge for PR #${prNumber}`);
+              } catch (error) {
+                console.error('Failed to enable auto-merge:', error.message);
+              }
+            } else {
+              console.log(`Auto-merge already enabled for PR #${prNumber}`);
+            }
+
+      - name: Add auto-merge label to release PRs
+        if: github.event_name == 'pull_request' && github.event.action == 'opened'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const pr = context.payload.pull_request;
+
+            // Check if PR is from release-please
+            const isReleasePR = pr.user.login === 'github-actions[bot]' &&
+                              pr.user.type === 'Bot' &&
+                              (pr.title.includes('chore(main): release') ||
+                               pr.head.ref.startsWith('release-please'));
+
+            if (isReleasePR) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: ['automerge', 'release']
+              });
+              console.log('Added automerge label to release PR');
+            }
