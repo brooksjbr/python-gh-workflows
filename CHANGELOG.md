@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0](https://github.com/brooksjbr/python-gh-workflows/compare/v0.1.0...v0.2.0) (2025-09-18)
+
+
+### Features
+
+* auto merge pr ([e6c7dee](https://github.com/brooksjbr/python-gh-workflows/commit/e6c7dee702cae2ac742ceceb7857b442ca603e57))
+* auto merge pr ([f06052f](https://github.com/brooksjbr/python-gh-workflows/commit/f06052f3a1bb1149aae58eab23c7ebc22a0a0f40))
+
 ## 0.1.0 (2025-09-18)
 
 
