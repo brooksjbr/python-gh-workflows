@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "python-gh-workflows"
-version = "0.2.0"
+version = "0.3.0"
 description = "A Python project for demomstrating GitHub workflows that lint, test, and version a codebase"
 authors = [
     {name = "Brooks Robertson", email = "brooksjbr@protonmail.ch"},

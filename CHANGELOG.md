@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/brooksjbr/python-gh-workflows/compare/v0.2.0...v0.3.0) (2025-09-19)
+
+
+### Features
+
+* git pre commit support ([485a624](https://github.com/brooksjbr/python-gh-workflows/commit/485a624105968f16e62c63b453d50ae401248dd8))
+
 ## [0.2.0](https://github.com/brooksjbr/python-gh-workflows/compare/v0.1.0...v0.2.0) (2025-09-18)
 
 
