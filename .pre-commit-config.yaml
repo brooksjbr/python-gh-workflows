@@ -3,10 +3,6 @@ repos:
   rev: 23.12.1
   hooks:
   - id: black
-- repo: https://github.com/csachs/pyproject-flake8
-  rev: 7.0.0
-  hooks:
-  - id: pflake8
 - repo: local
   hooks:
   - id: pytest
